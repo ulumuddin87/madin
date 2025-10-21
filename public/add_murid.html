@@ -1,0 +1,17 @@
+<form id="formAdd">
+  <!-- input fields ... -->
+  <button type="submit">Tambah</button>
+</form>
+
+<script>
+document.getElementById("formAdd").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const obj = Object.fromEntries(fd.entries());
+  await fetch('/.netlify/functions/add_murid', {
+    method: 'POST',
+    body: JSON.stringify(obj)
+  });
+  window.location = '/murid.html'; // atau route data_murid.html
+});
+</script>
