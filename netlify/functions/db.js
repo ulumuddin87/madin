@@ -1,14 +1,11 @@
-// db.js
+// netlify/functions/db.js
 import pkg from "pg";
 const { Pool } = pkg;
 
-// DATABASE_URL di-set di Netlify (Site settings -> Environment)
-const connectionString = process.env.DATABASE_URL;
-
 const pool = new Pool({
-  connectionString,
-  // Supabase requires SSL but rejectUnauthorized false in many hosts
-  ssl: connectionString && connectionString.includes("supabase") ? { rejectUnauthorized: false } : false
+  connectionString: process.env.SUPABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
+// ✅ Export default agar bisa di-import langsung
 export default pool;

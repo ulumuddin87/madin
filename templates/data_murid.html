@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Data Murid{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>📚 Data Murid Madin</h3>
+    <button id="btnTambah" class="btn btn-success">+ Tambah Murid</button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered" id="muridTable">
+      <thead class="table-primary text-center">
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Kelas</th>
+          <th>Jilid</th>
+          <th>Wali Kelas</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="muridBody">
+        <tr>
+          <td colspan="6" class="text-center">Memuat data...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const tableBody = document.getElementById("muridBody");
+
+    try {
+      const res = await fetch("/.netlify/functions/get_murid");
+      const data = await res.json();
+
+      if (!data || data.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Tidak ada data murid</td></tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = "";
+      data.forEach((m, i) => {
+        const row = `
+          <tr>
+            <td class="text-center">${i + 1}</td>
+            <td>${m.nama}</td>
+            <td>${m.kelas || '-'}</td>
+            <td>${m.jilid || '-'}</td>
+            <td>${m.wali_kelas || '-'}</td>
+            <td class="text-center">
+              <button class="btn btn-info btn-sm" onclick="lihatBiodata(${m.id})">Biodata</button>
+              <button class="btn btn-warning btn-sm" onclick="editMurid(${m.id})">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="hapusMurid(${m.id})">Hapus</button>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    } catch (err) {
+      console.error(err);
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Gagal memuat data</td></tr>`;
+    }
+  });
+
+  function lihatBiodata(id) {
+    window.location.href = `/templates/biodata_murid.html?id=${id}`;
+  }
+
+  function editMurid(id) {
+    window.location.href = `/templates/edit_murid.html?id=${id}`;
+  }
+
+  async function hapusMurid(id) {
+    if (!confirm("Yakin ingin menghapus data murid ini?")) return;
+    try {
+      const res = await fetch(`/.netlify/functions/delete_murid?id=${id}`, { method: "DELETE" });
+      const result = await res.json();
+      alert(result.message || "Data dihapus");
+      location.reload();
+    } catch (err) {
+      alert("Gagal menghapus data");
+    }
+  }
+
+  document.getElementById("btnTambah").addEventListener("click", () => {
+    window.location.href = "/templates/add_murid.html";
+  });
+</script>
+{% endblock %}
