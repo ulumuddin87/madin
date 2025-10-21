@@ -3,7 +3,23 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "pg": "^8.11.3",
-    "dotenv": "^16.4.1"
-  }
+    "dotenv": "^16.6.1",
+    "pg": "^8.16.3"
+  },
+  "description": "��#\u0000 \u0000m\u0000a\u0000d\u0000i\u0000n\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ulumuddin87/madin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ulumuddin87/madin/issues"
+  },
+  "homepage": "https://github.com/ulumuddin87/madin#readme"
 }
