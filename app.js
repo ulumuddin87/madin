@@ -92,8 +92,9 @@ searchInput.addEventListener("keyup", () => filterForm.dispatchEvent(new Event('
 // Tambah/Edit Murid
 muridForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const id = muridIdInput.value;
+  const id = muridIdInput.value; // kosong → insert, ada → update
 
+  // Payload data
   const payload = {
     nama: document.getElementById("nama").value.trim(),
     jilid: document.getElementById("jilid").value.trim() || null,
@@ -104,14 +105,22 @@ muridForm.addEventListener("submit", async e => {
   };
 
   try {
-    if(id){
-      const { error } = await supabase.from("murid").update(payload).eq("id", id);
+    if(id){ 
+      // Update data berdasarkan id
+      const { data, error } = await supabase
+        .from("murid")
+        .update(payload)
+        .eq("id", id);
       if(error) throw error;
     } else {
-      const { error } = await supabase.from("murid").insert([payload]);
+      // Insert data baru → jangan sertakan id
+      const { data, error } = await supabase
+        .from("murid")
+        .insert([payload]); // id otomatis increment
       if(error) throw error;
     }
 
+    // Tutup modal, reset form, reload table
     bootstrap.Modal.getInstance(document.getElementById('modalForm')).hide();
     muridForm.reset();
     loadMurid();
@@ -121,6 +130,7 @@ muridForm.addEventListener("submit", async e => {
     alert("Gagal simpan murid: " + err.message);
   }
 });
+
 
 // Edit
 window.editMurid = function(id){
