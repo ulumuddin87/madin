@@ -4,7 +4,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = "https://wfscxloykjfiqjhizihh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8";
 
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -23,13 +24,13 @@ const muridIdInput = document.getElementById("muridId");
 let muridData = [];
 
 // ========================================
-// 🔹 LOAD DATA MURID DARI SUPABASE
+// 🔹 LOAD DATA MURID
 // ========================================
 async function loadMurid() {
   const { data, error } = await db
     .from("murid")
     .select("*")
-    .order("id", { ascending: false }); // 🔹 urutan terbaru paling atas
+    .order("id", { ascending: false });
   if (error) {
     console.error("Gagal load data:", error.message);
     alert("Gagal load data murid: " + error.message);
@@ -46,37 +47,38 @@ async function loadMurid() {
 function populateFilters() {
   const kelasSet = new Set();
   const jilidSet = new Set();
-  muridData.forEach(m => {
+  muridData.forEach((m) => {
     if (m.kelas) kelasSet.add(m.kelas);
     if (m.jilid) jilidSet.add(m.jilid);
   });
 
   kelasFilter.innerHTML =
     `<option value="">Filter Kelas</option>` +
-    [...kelasSet].map(k => `<option value="${k}">${k}</option>`).join("");
+    [...kelasSet].map((k) => `<option value="${k}">${k}</option>`).join("");
   jilidFilter.innerHTML =
     `<option value="">Filter Jilid</option>` +
-    [...jilidSet].map(j => `<option value="${j}">${j}</option>`).join("");
+    [...jilidSet].map((j) => `<option value="${j}">${j}</option>`).join("");
 }
 
 // ========================================
-// 🔹 RENDER TABEL
+// 🔹 RENDER TABEL MURID
 // ========================================
 function renderTable(data) {
   muridTableBody.innerHTML = "";
-  data.forEach(m => {
+  data.forEach((m) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${m.id}</td>
       <td>${m.nama}</td>
-      <td>${m.jilid || '-'}</td>
-      <td>${m.kelas || '-'}</td>
-      <td>${m.alamat || '-'}</td>
-      <td>${m.wali_murid || '-'}</td>
-      <td>${m.wali_kelas || '-'}</td>
+      <td>${m.jilid || "-"}</td>
+      <td>${m.kelas || "-"}</td>
+      <td>${m.alamat || "-"}</td>
+      <td>${m.wali_murid || "-"}</td>
+      <td>${m.wali_kelas || "-"}</td>
       <td class="text-center">
         <div class="d-flex flex-column gap-1">
-          <button class="btn btn-sm btn-secondary">Nilai</button>
+          <!-- 📘 Tombol menuju nilai.html -->
+          <a href="nilai.html?id=${m.id}" class="btn btn-sm btn-success">📘 Nilai</a>
           <button class="btn btn-sm btn-outline-dark">Riwayat</button>
         </div>
       </td>
@@ -92,18 +94,19 @@ function renderTable(data) {
 }
 
 // ========================================
-// 🔹 PENCARIAN & FILTER
+// 🔹 FILTER & PENCARIAN
 // ========================================
-filterForm.addEventListener("submit", e => {
+filterForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const q = searchInput.value.toLowerCase();
   const k = kelasFilter.value;
   const j = jilidFilter.value;
 
-  const filtered = muridData.filter(m =>
-    (!q || m.nama.toLowerCase().includes(q)) &&
-    (!k || m.kelas === k) &&
-    (!j || m.jilid === j)
+  const filtered = muridData.filter(
+    (m) =>
+      (!q || m.nama.toLowerCase().includes(q)) &&
+      (!k || m.kelas === k) &&
+      (!j || m.jilid === j)
   );
 
   renderTable(filtered);
@@ -114,9 +117,9 @@ searchInput.addEventListener("keyup", () =>
 );
 
 // ========================================
-// 🔹 TAMBAH / UPDATE DATA MURID
+// 🔹 TAMBAH / UPDATE MURID
 // ========================================
-muridForm.addEventListener("submit", async e => {
+muridForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = muridIdInput.value;
 
@@ -173,11 +176,11 @@ muridForm.addEventListener("submit", async e => {
 
 function val(id) {
   const el = document.getElementById(id);
-  return el ? (el.value.trim() || null) : null;
+  return el ? el.value.trim() || null : null;
 }
 
 // ========================================
-// 🔹 HAPUS DATA
+// 🔹 HAPUS MURID
 // ========================================
 window.hapusMurid = async function (id) {
   if (!confirm("Yakin ingin menghapus data ini?")) return;
@@ -193,16 +196,16 @@ window.hapusMurid = async function (id) {
 };
 
 // ========================================
-// 🔹 LIHAT & LENGKAPI BIODATA (UPDATE)
+// 🔹 LIHAT BIODATA
 // ========================================
 window.viewBiodata = function (id) {
-  const m = muridData.find(x => x.id === id);
+  const m = muridData.find((x) => x.id === id);
   if (!m) return alert("Data murid tidak ditemukan!");
 
   modalTitle.innerText = "Lengkapi Biodata Murid";
   muridIdInput.value = m.id;
 
-  Object.keys(m).forEach(k => {
+  Object.keys(m).forEach((k) => {
     const el = document.getElementById(k);
     if (el) el.value = m[k] ?? "";
   });
@@ -212,6 +215,6 @@ window.viewBiodata = function (id) {
 };
 
 // ========================================
-// 🔹 LOAD DATA SAAT HALAMAN DIBUKA
+// 🔹 LOAD SAAT PERTAMA
 // ========================================
 loadMurid();
