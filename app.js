@@ -79,7 +79,7 @@ function renderTable(data) {
         <div class="d-flex flex-column gap-1">
           <!-- 📘 Tombol menuju nilai.html -->
           <a href="nilai.html?id=${m.id}" class="btn btn-sm btn-success">📘 Nilai</a>
-          <button class="btn btn-sm btn-outline-dark">Riwayat</button>
+          <a href="rapot.html?id=${m.id}" class="btn btn-sm btn-outline-dark">Rapot</a>
         </div>
       </td>
       <td class="text-center">
