@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Data Murid</title>
 
   <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Style tambahan -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background-color: #f8f9fa; }
+    .modal-dialog-scrollable .modal-body {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  </style>
 </head>
 <body>
 <div class="container py-3">
 
   <!-- Header & Tombol -->
-  <div class="sticky-top bg-white pb-2 pt-2 mb-2 border-bottom">
-    <h3 class="mb-2">Data Murid</h3>
+  <div class="sticky-top bg-white pb-2 pt-2 mb-3 border-bottom">
+    <h3 class="mb-2">📋 Data Murid</h3>
     <div class="d-flex flex-wrap gap-2">
       <button class="btn btn-success btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalForm">Tambah Murid</button>
       <button class="btn btn-warning btn-sm flex-fill">Mapel</button>
@@ -27,10 +29,10 @@
     </div>
   </div>
 
-  <!-- Form Pencarian & Filter -->
+  <!-- Filter -->
   <form id="filterForm" class="row g-2 mb-3">
     <div class="col-md-4">
-      <input type="text" id="searchInput" class="form-control" placeholder="Cari nama..." />
+      <input type="text" id="searchInput" class="form-control" placeholder="Cari nama...">
     </div>
     <div class="col-md-3">
       <select id="kelasFilter" class="form-select">
@@ -43,11 +45,11 @@
       </select>
     </div>
     <div class="col-md-2">
-      <button type="submit" class="btn btn-primary w-100">Cari / Filter</button>
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
     </div>
   </form>
 
-  <!-- Tabel Data Murid -->
+  <!-- Tabel Data -->
   <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle" id="muridTable">
       <thead class="table-dark text-center">
@@ -68,44 +70,164 @@
   </div>
 </div>
 
-<!-- Modal Tambah/Edit Murid -->
+<!-- Modal Form -->
 <div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="modalFormLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <form id="muridForm">
         <div class="modal-header">
           <h5 class="modal-title" id="modalFormLabel">Tambah Murid</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body">
           <input type="hidden" id="muridId">
-          <div class="row g-2">
-            <div class="col-md-6">
+
+          <div class="row g-3">
+            <div class="col-md-4">
               <label class="form-label">Nama</label>
               <input type="text" id="nama" class="form-control" required>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-label">Jilid</label>
               <input type="text" id="jilid" class="form-control">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-label">Kelas</label>
               <input type="text" id="kelas" class="form-control">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label">Alamat</label>
               <input type="text" id="alamat" class="form-control">
             </div>
-            <div class="col-md-6">
+
+            <div class="col-md-4">
               <label class="form-label">Wali Murid</label>
               <input type="text" id="wali_murid" class="form-control">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label">Wali Kelas</label>
               <input type="text" id="wali_kelas" class="form-control">
             </div>
+
+            <!-- Biodata Tambahan -->
+            <hr>
+            <h5 class="mt-2">🧾 Biodata Lengkap</h5>
+
+            <div class="col-md-4">
+              <label class="form-label">NIK</label>
+              <input type="number" id="nik" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">No Induk</label>
+              <input type="number" id="no_induk" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tempat, Tanggal Lahir</label>
+              <input type="text" id="tempat_tanggal_lahir" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Jenis Kelamin</label>
+              <select id="jenis_kelamin" class="form-select">
+                <option value="">- Pilih -</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Nilai Bacaan</label>
+              <input type="number" id="nilai_bacaan" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Nilai Hafalan</label>
+              <input type="number" id="nilai_hafalan" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Nilai Ahlak</label>
+              <input type="number" id="nilai_ahlak" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Nilai Kehadiran</label>
+              <input type="number" id="nilai_kehadiran" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status dalam Keluarga</label>
+              <input type="text" id="status_dalam_keluarga" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Anak ke</label>
+              <input type="number" id="anak_ke" class="form-control">
+            </div>
+
+            <hr class="mt-3">
+            <h5>👨‍👩‍👧 Orang Tua</h5>
+
+            <div class="col-md-4">
+              <label class="form-label">Nama Ayah</label>
+              <input type="text" id="nama_ayah" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">No Tlp Ayah</label>
+              <input type="number" id="no_tlp_ayah" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Pekerjaan Ayah</label>
+              <input type="text" id="pekerjaan_ayah" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Nama Ibu</label>
+              <input type="text" id="nama_ibu" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">No Tlp Ibu</label>
+              <input type="number" id="no_tlp_ibu" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Pekerjaan Ibu</label>
+              <input type="text" id="pekerjaan_ibu" class="form-control">
+            </div>
+
+            <hr class="mt-3">
+            <h5>📍 Alamat Detail</h5>
+
+            <div class="col-md-3">
+              <label class="form-label">Dusun</label>
+              <input type="text" id="dusun" class="form-control">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">RT</label>
+              <input type="number" id="rt" class="form-control">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">RW</label>
+              <input type="number" id="rw" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Desa</label>
+              <input type="text" id="desa" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Kecamatan</label>
+              <input type="text" id="kecamatan" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Kabupaten/Kota</label>
+              <input type="text" id="kabupaten_kota" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Provinsi</label>
+              <input type="text" id="provinsi" class="form-control">
+            </div>
+
+           
+
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="submit" class="btn btn-success">Simpan</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -115,10 +237,8 @@
   </div>
 </div>
 
-<!-- Library yang wajib di-load berurutan -->
+<!-- Bootstrap & Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/@supabase/supabase-js@2.47.0/dist/umd/supabase.js"></script>
-<script src="app.js"></script>
-
+<script type="module" src="app.js"></script>
 </body>
 </html>
