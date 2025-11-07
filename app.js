@@ -1,9 +1,15 @@
-// 🔹 Ganti dengan URL & ANON KEY Supabase Anda
+// Pastikan script Supabase sudah diload di HTML sebelum file ini!
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+// <script src="app.js"></script>
+
+// 🔹 Inisialisasi koneksi ke Supabase
 const SUPABASE_URL = "https://wfscxloykjfiqjhizihh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 🟢 Gunakan window.supabase.createClient (bukan destrukturisasi langsung)
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// 🔹 Ambil elemen-elemen HTML
 const muridTableBody = document.querySelector("#muridTable tbody");
 const searchInput = document.getElementById("searchInput");
 const kelasFilter = document.getElementById("kelasFilter");
@@ -15,10 +21,10 @@ const muridIdInput = document.getElementById("muridId");
 
 let muridData = [];
 
-// Load semua murid
+// 🔹 Load semua murid dari Supabase
 async function loadMurid() {
-  const { data, error } = await supabase.from("murid").select("*");
-  if(error){
+  const { data, error } = await db.from("murid").select("*").order("id", { ascending: true });
+  if (error) {
     console.error("Gagal load data:", error.message);
     alert("Gagal load data murid: " + error.message);
     return;
@@ -28,20 +34,24 @@ async function loadMurid() {
   renderTable(muridData);
 }
 
-// Populate filter dropdown
+// 🔹 Isi dropdown filter
 function populateFilters() {
   const kelasSet = new Set();
   const jilidSet = new Set();
   muridData.forEach(m => {
-    if(m.kelas) kelasSet.add(m.kelas);
-    if(m.jilid) jilidSet.add(m.jilid);
+    if (m.kelas) kelasSet.add(m.kelas);
+    if (m.jilid) jilidSet.add(m.jilid);
   });
 
-  kelasFilter.innerHTML = `<option value="">Filter Kelas</option>` + [...kelasSet].map(k => `<option value="${k}">${k}</option>`).join("");
-  jilidFilter.innerHTML = `<option value="">Filter Jilid</option>` + [...jilidSet].map(j => `<option value="${j}">${j}</option>`).join("");
+  kelasFilter.innerHTML =
+    `<option value="">Filter Kelas</option>` +
+    [...kelasSet].map(k => `<option value="${k}">${k}</option>`).join("");
+  jilidFilter.innerHTML =
+    `<option value="">Filter Jilid</option>` +
+    [...jilidSet].map(j => `<option value="${j}">${j}</option>`).join("");
 }
 
-// Render table
+// 🔹 Render tabel murid
 function renderTable(data) {
   muridTableBody.innerHTML = "";
   data.forEach(m => {
@@ -72,7 +82,7 @@ function renderTable(data) {
   });
 }
 
-// Search & Filter
+// 🔹 Pencarian & filter
 filterForm.addEventListener("submit", e => {
   e.preventDefault();
   const q = searchInput.value.toLowerCase();
@@ -87,14 +97,16 @@ filterForm.addEventListener("submit", e => {
 
   renderTable(filtered);
 });
-searchInput.addEventListener("keyup", () => filterForm.dispatchEvent(new Event('submit')));
 
-// Tambah/Edit Murid
+searchInput.addEventListener("keyup", () =>
+  filterForm.dispatchEvent(new Event("submit"))
+);
+
+// 🔹 Tambah/Edit murid
 muridForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const id = muridIdInput.value; // kosong → insert, ada → update
+  const id = muridIdInput.value;
 
-  // Payload data
   const payload = {
     nama: document.getElementById("nama").value.trim(),
     jilid: document.getElementById("jilid").value.trim() || null,
@@ -105,37 +117,28 @@ muridForm.addEventListener("submit", async e => {
   };
 
   try {
-    if(id){ 
-      // Update data berdasarkan id
-      const { data, error } = await supabase
-        .from("murid")
-        .update(payload)
-        .eq("id", id);
-      if(error) throw error;
+    if (id) {
+      const { error } = await db.from("murid").update(payload).eq("id", id);
+      if (error) throw error;
     } else {
-      // Insert data baru → jangan sertakan id
-      const { data, error } = await supabase
-        .from("murid")
-        .insert([payload]); // id otomatis increment
-      if(error) throw error;
+      const { error } = await db.from("murid").insert([payload]);
+      if (error) throw error;
     }
 
-    // Tutup modal, reset form, reload table
-    bootstrap.Modal.getInstance(document.getElementById('modalForm')).hide();
+    bootstrap.Modal.getInstance(document.getElementById("modalForm")).hide();
     muridForm.reset();
     loadMurid();
     alert("Data murid berhasil disimpan!");
-  } catch(err) {
+  } catch (err) {
     console.error("Gagal simpan murid:", err.message);
     alert("Gagal simpan murid: " + err.message);
   }
 });
 
-
-// Edit
-window.editMurid = function(id){
+// 🔹 Edit data murid
+window.editMurid = function (id) {
   const m = muridData.find(x => x.id === id);
-  if(!m) return;
+  if (!m) return;
   modalTitle.innerText = "Edit Murid";
   muridIdInput.value = m.id;
   document.getElementById("nama").value = m.nama;
@@ -145,30 +148,30 @@ window.editMurid = function(id){
   document.getElementById("wali_murid").value = m.wali_murid;
   document.getElementById("wali_kelas").value = m.wali_kelas;
 
-  const modal = new bootstrap.Modal(document.getElementById('modalForm'));
+  const modal = new bootstrap.Modal(document.getElementById("modalForm"));
   modal.show();
-}
+};
 
-// Hapus
-window.hapusMurid = async function(id){
-  if(!confirm("Yakin ingin menghapus data ini?")) return;
+// 🔹 Hapus data
+window.hapusMurid = async function (id) {
+  if (!confirm("Yakin ingin menghapus data ini?")) return;
   try {
-    const { error } = await supabase.from("murid").delete().eq("id", id);
-    if(error) throw error;
+    const { error } = await db.from("murid").delete().eq("id", id);
+    if (error) throw error;
     loadMurid();
     alert("Data murid berhasil dihapus!");
-  } catch(err) {
+  } catch (err) {
     console.error("Gagal hapus murid:", err.message);
     alert("Gagal hapus murid: " + err.message);
   }
-}
+};
 
-// View Biodata
-window.viewBiodata = function(id){
+// 🔹 Lihat biodata murid
+window.viewBiodata = function (id) {
   const m = muridData.find(x => x.id === id);
-  if(!m) return alert("Data murid tidak ditemukan!");
+  if (!m) return alert("Data murid tidak ditemukan!");
   alert(JSON.stringify(m, null, 2));
-}
+};
 
-// Load awal
+// 🔹 Load awal saat halaman dibuka
 loadMurid();
