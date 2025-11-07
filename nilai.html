@@ -21,6 +21,11 @@
               <option value="Genap">Genap</option>
             </select>
           </div>
+          
+            <div class="mb-3">
+            <label class="form-label">Catatan Wali Kelas</label>
+            <textarea id="catatanWali" class="form-control" placeholder="Catatan Wali Kelas..." rows="3"></textarea>
+          </div>
 
           <div id="listMapel" class="row g-3"></div>
 
@@ -80,6 +85,7 @@
               <label class="form-label">Deskripsi ${m.nama}</label>
               <input type="text" class="form-control" value="${n ? n.deskripsi : ''}" readonly>
             </div>
+
           `;
         }).join("");
 
