@@ -1,15 +1,13 @@
-// Pastikan script Supabase sudah diload di HTML sebelum file ini!
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-// <script src="app.js"></script>
+// ✅ app.js
+console.log("✅ app.js berhasil dimuat");
 
-// 🔹 Inisialisasi koneksi ke Supabase
+// Inisialisasi Supabase
 const SUPABASE_URL = "https://wfscxloykjfiqjhizihh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc2N4bG95a2pmaXFqaGl6aWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNTkyNTAsImV4cCI6MjA3NzgzNTI1MH0.vLBX7NXKVsjyqyVSseLGmrObbGSrzXh-eXbENuKCIx8";
 
-// 🟢 Gunakan window.supabase.createClient (bukan destrukturisasi langsung)
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔹 Ambil elemen-elemen HTML
 const muridTableBody = document.querySelector("#muridTable tbody");
 const searchInput = document.getElementById("searchInput");
 const kelasFilter = document.getElementById("kelasFilter");
@@ -21,60 +19,61 @@ const muridIdInput = document.getElementById("muridId");
 
 let muridData = [];
 
-// 🔹 Load semua murid dari Supabase
+// 🔹 Ambil semua data murid
 async function loadMurid() {
-  const { data, error } = await db.from("murid").select("*").order("id", { ascending: true });
+  const { data, error } = await db
+    .from("murid")
+    .select("*")
+    .order("id", { ascending: true });
+
   if (error) {
-    console.error("Gagal load data:", error.message);
-    alert("Gagal load data murid: " + error.message);
+    alert("Gagal memuat data murid: " + error.message);
+    console.error(error);
     return;
   }
+
   muridData = data;
   populateFilters();
   renderTable(muridData);
 }
 
-// 🔹 Isi dropdown filter
+// 🔹 Isi filter dropdown
 function populateFilters() {
   const kelasSet = new Set();
   const jilidSet = new Set();
-  muridData.forEach(m => {
+  muridData.forEach((m) => {
     if (m.kelas) kelasSet.add(m.kelas);
     if (m.jilid) jilidSet.add(m.jilid);
   });
 
   kelasFilter.innerHTML =
     `<option value="">Filter Kelas</option>` +
-    [...kelasSet].map(k => `<option value="${k}">${k}</option>`).join("");
+    [...kelasSet].map((k) => `<option value="${k}">${k}</option>`).join("");
   jilidFilter.innerHTML =
     `<option value="">Filter Jilid</option>` +
-    [...jilidSet].map(j => `<option value="${j}">${j}</option>`).join("");
+    [...jilidSet].map((j) => `<option value="${j}">${j}</option>`).join("");
 }
 
-// 🔹 Render tabel murid
+// 🔹 Tampilkan tabel murid
 function renderTable(data) {
   muridTableBody.innerHTML = "";
-  data.forEach(m => {
+  data.forEach((m) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${m.id}</td>
       <td>${m.nama}</td>
-      <td>${m.jilid || '-'}</td>
-      <td>${m.kelas || '-'}</td>
-      <td>${m.alamat || '-'}</td>
-      <td>${m.wali_murid || '-'}</td>
-      <td>${m.wali_kelas || '-'}</td>
+      <td>${m.jilid || "-"}</td>
+      <td>${m.kelas || "-"}</td>
+      <td>${m.alamat || "-"}</td>
+      <td>${m.wali_murid || "-"}</td>
+      <td>${m.wali_kelas || "-"}</td>
       <td class="text-center">
-        <div class="d-flex flex-column gap-1">
-          <button class="btn btn-sm btn-secondary">Nilai</button>
-          <button class="btn btn-sm btn-outline-dark">Riwayat</button>
-        </div>
+        <button class="btn btn-sm btn-secondary">Nilai</button>
       </td>
       <td class="text-center">
         <div class="d-flex flex-column gap-1">
           <button class="btn btn-sm btn-info" onclick="editMurid(${m.id})">Edit</button>
           <button class="btn btn-sm btn-danger" onclick="hapusMurid(${m.id})">Hapus</button>
-          <button class="btn btn-sm btn-primary" onclick="viewBiodata(${m.id})">Biodata</button>
         </div>
       </td>
     `;
@@ -82,28 +81,24 @@ function renderTable(data) {
   });
 }
 
-// 🔹 Pencarian & filter
-filterForm.addEventListener("submit", e => {
+// 🔹 Filter & cari
+filterForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const q = searchInput.value.toLowerCase();
   const k = kelasFilter.value;
   const j = jilidFilter.value;
 
-  const filtered = muridData.filter(m =>
-    (!q || m.nama.toLowerCase().includes(q)) &&
-    (!k || m.kelas === k) &&
-    (!j || m.jilid === j)
+  const filtered = muridData.filter(
+    (m) =>
+      (!q || m.nama.toLowerCase().includes(q)) &&
+      (!k || m.kelas === k) &&
+      (!j || m.jilid === j)
   );
-
   renderTable(filtered);
 });
 
-searchInput.addEventListener("keyup", () =>
-  filterForm.dispatchEvent(new Event("submit"))
-);
-
-// 🔹 Tambah/Edit murid
-muridForm.addEventListener("submit", async e => {
+// 🔹 Simpan murid (tambah / edit)
+muridForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = muridIdInput.value;
 
@@ -113,33 +108,30 @@ muridForm.addEventListener("submit", async e => {
     kelas: document.getElementById("kelas").value.trim() || null,
     alamat: document.getElementById("alamat").value.trim() || null,
     wali_murid: document.getElementById("wali_murid").value.trim() || null,
-    wali_kelas: document.getElementById("wali_kelas").value.trim() || null
+    wali_kelas: document.getElementById("wali_kelas").value.trim() || null,
   };
 
   try {
     if (id) {
-      const { error } = await db.from("murid").update(payload).eq("id", id);
-      if (error) throw error;
+      await db.from("murid").update(payload).eq("id", id);
     } else {
-      const { error } = await db.from("murid").insert([payload]);
-      if (error) throw error;
+      await db.from("murid").insert([payload]);
     }
 
     bootstrap.Modal.getInstance(document.getElementById("modalForm")).hide();
     muridForm.reset();
     loadMurid();
-    alert("Data murid berhasil disimpan!");
   } catch (err) {
-    console.error("Gagal simpan murid:", err.message);
-    alert("Gagal simpan murid: " + err.message);
+    alert("Gagal menyimpan: " + err.message);
   }
 });
 
-// 🔹 Edit data murid
-window.editMurid = function (id) {
-  const m = muridData.find(x => x.id === id);
+// 🔹 Edit murid
+window.editMurid = (id) => {
+  const m = muridData.find((x) => x.id === id);
   if (!m) return;
-  modalTitle.innerText = "Edit Murid";
+
+  modalTitle.textContent = "Edit Murid";
   muridIdInput.value = m.id;
   document.getElementById("nama").value = m.nama;
   document.getElementById("jilid").value = m.jilid;
@@ -152,26 +144,12 @@ window.editMurid = function (id) {
   modal.show();
 };
 
-// 🔹 Hapus data
-window.hapusMurid = async function (id) {
-  if (!confirm("Yakin ingin menghapus data ini?")) return;
-  try {
-    const { error } = await db.from("murid").delete().eq("id", id);
-    if (error) throw error;
-    loadMurid();
-    alert("Data murid berhasil dihapus!");
-  } catch (err) {
-    console.error("Gagal hapus murid:", err.message);
-    alert("Gagal hapus murid: " + err.message);
-  }
+// 🔹 Hapus murid
+window.hapusMurid = async (id) => {
+  if (!confirm("Yakin ingin menghapus?")) return;
+  await db.from("murid").delete().eq("id", id);
+  loadMurid();
 };
 
-// 🔹 Lihat biodata murid
-window.viewBiodata = function (id) {
-  const m = muridData.find(x => x.id === id);
-  if (!m) return alert("Data murid tidak ditemukan!");
-  alert(JSON.stringify(m, null, 2));
-};
-
-// 🔹 Load awal saat halaman dibuka
+// 🔹 Jalankan pertama kali
 loadMurid();
