@@ -24,6 +24,44 @@ const muridIdInput = document.getElementById("muridId");
 let muridData = [];
 
 // ========================================
+// 🔹 ROLE USER
+// ========================================
+// role dan kelas user disimpan saat login di localStorage
+// Ambil role & info user langsung dari object "user"
+const userData = JSON.parse(localStorage.getItem("user")) || {};
+const userRole = userData.role || null;   // admin / guru / kepala
+
+
+function setupRoleAccess() {
+  if (!userRole) {
+    alert("Role user tidak ditemukan. Silakan login kembali.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const btnTambah = document.querySelector("[data-bs-target='#modalForm']");
+  const allInputs = document.querySelectorAll("#modalForm input, #modalForm select");
+  const btnSimpan = document.querySelector("#modalForm button[type='submit']");
+
+  if (userRole === "kepala") {
+    // Kepala hanya bisa lihat → sembunyikan tombol tambah & edit
+    if (btnTambah) btnTambah.style.display = "none";
+    allInputs.forEach((i) => (i.disabled = true));
+    if (btnSimpan) btnSimpan.style.display = "none";
+  }
+
+  if (userRole === "guru") {
+    // Guru bisa edit tapi hanya murid kelas mereka
+    // Saat renderTable nanti kita akan filter otomatis
+    window.userKelasFilter = userKelas;
+  }
+
+  // admin → akses penuh, tidak ada batasan
+}
+
+
+
+// ========================================
 // 🔹 LOAD DATA MURID
 // ========================================
 async function loadMurid() {
@@ -66,6 +104,9 @@ function populateFilters() {
 function renderTable(data) {
   muridTableBody.innerHTML = "";
   data.forEach((m) => {
+    // 🔹 filter untuk guru → hanya murid kelas mereka
+    if (userRole === "guru" && window.userKelasFilter && m.kelas !== window.userKelasFilter) return;
+
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${m.id}</td>
@@ -77,7 +118,6 @@ function renderTable(data) {
       <td>${m.wali_kelas || "-"}</td>
       <td class="text-center">
         <div class="d-flex flex-column gap-1">
-          <!-- 📘 Tombol menuju nilai.html -->
           <a href="nilai.html?id=${m.id}" class="btn btn-sm btn-success">📘 Nilai</a>
           <a href="rapot.html?id=${m.id}" class="btn btn-sm btn-outline-dark">Rapot</a>
         </div>
@@ -85,13 +125,14 @@ function renderTable(data) {
       <td class="text-center">
         <div class="d-flex flex-column gap-1">
           <button class="btn btn-sm btn-info" onclick="viewBiodata(${m.id})">🧾 Biodata</button>
-          <button class="btn btn-sm btn-danger" onclick="hapusMurid(${m.id})">Hapus</button>
+          ${userRole === "kepala" ? "" : `<button class="btn btn-sm btn-danger" onclick="hapusMurid(${m.id})">Hapus</button>`}
         </div>
       </td>
     `;
     muridTableBody.appendChild(row);
   });
 }
+
 
 // ========================================
 // 🔹 FILTER & PENCARIAN
@@ -217,4 +258,6 @@ window.viewBiodata = function (id) {
 // ========================================
 // 🔹 LOAD SAAT PERTAMA
 // ========================================
+// 🔹 Setup role sebelum load data
+setupRoleAccess();
 loadMurid();
