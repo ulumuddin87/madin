@@ -256,6 +256,95 @@ window.viewBiodata = function (id) {
 };
 
 // ========================================
+// 🔹 EXPORT EXCEL (LENGKAP + BIODATA)
+// ========================================
+document.getElementById("exportExcelBtn").addEventListener("click", () => {
+  if (!muridData || muridData.length === 0) {
+    alert("Data murid masih kosong!");
+    return;
+  }
+
+  // 🔒 Filter sesuai role (AMAN)
+  let dataExport = muridData;
+
+  if (userRole === "guru" && window.userKelasFilter) {
+    dataExport = muridData.filter(m => m.kelas === window.userKelasFilter);
+  }
+
+  const excelData = dataExport.map((m, i) => ({
+    "No": i + 1,
+    "ID": m.id,
+    "Nama": m.nama,
+    "Jilid": m.jilid,
+    "Kelas": m.kelas,
+    "Alamat": m.alamat,
+    "Wali Murid": m.wali_murid,
+    "Wali Kelas": m.wali_kelas,
+
+    "NIK": m.nik ? `'${m.nik}` : "",
+    "No Induk": m.no_induk,
+    "TTL": m.tempat_tanggal_lahir,
+    "Jenis Kelamin": m.jenis_kelamin,
+
+    "Nilai Bacaan": m.nilai_bacaan,
+    "Nilai Hafalan": m.nilai_hafalan,
+    "Nilai Ahlak": m.nilai_ahlak,
+    "Nilai Kehadiran": m.nilai_kehadiran,
+
+    "Status Dalam Keluarga": m.status_dalam_keluarga,
+    "Anak Ke": m.anak_ke,
+
+    "Nama Ayah": m.nama_ayah,
+    "No Tlp Ayah": m.no_tlp_ayah,
+    "Pekerjaan Ayah": m.pekerjaan_ayah,
+
+    "Nama Ibu": m.nama_ibu,
+    "No Tlp Ibu": m.no_tlp_ibu,
+    "Pekerjaan Ibu": m.pekerjaan_ibu,
+
+    "Dusun": m.dusun,
+    "RT": m.rt,
+    "RW": m.rw,
+    "Desa": m.desa,
+    "Kecamatan": m.kecamatan,
+    "Kabupaten/Kota": m.kabupaten_kota,
+    "Provinsi": m.provinsi
+  }));
+// ================= KOP + DATA =================
+const ws = XLSX.utils.json_to_sheet([]);
+
+/// KOP
+XLSX.utils.sheet_add_aoa(ws, [
+  ["PONDOK PESANTREN MAFATIHUL HUDA"],
+  ["DATA SANTRI (LENGKAP)"],
+  [`Tanggal Export: ${new Date().toLocaleDateString("id-ID")}`],
+  []
+], { origin: "A1" });
+
+// DATA
+XLSX.utils.sheet_add_json(ws, excelData, {
+  origin: "A5",
+  skipHeader: false
+});
+
+// FREEZE BARIS 1–5
+ws["!freeze"] = {
+  xSplit: 0,
+  ySplit: 5
+};
+
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data Murid");
+
+  XLSX.writeFile(
+    wb,
+    `Data_Santri_Mafatihul_Huda_${new Date().toISOString().slice(0,10)}.xlsx`
+  );
+});
+
+
+// ========================================
 // 🔹 LOAD SAAT PERTAMA
 // ========================================
 // 🔹 Setup role sebelum load data

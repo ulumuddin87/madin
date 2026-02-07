@@ -14,65 +14,92 @@
       max-height: 70vh;
       overflow-y: auto;
     }
+    
   </style>
 </head>
 <body>
+  <div class="container-fluid px-3 px-md-4">
 
 
   <!-- Header & Tombol -->
-  <div class="sticky-top bg-white pb-2 pt-2 mb-3 border-bottom">
-    <h3 class="mb-2">📋 Data Santri Mafatihul Huda</h3>
-    <nav class="navbar navbar-light bg-light p-3 d-flex justify-content-between align-items-center">
-    <span id="userInfo" class="fw-bold text-primary"></span>
-    <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Logout</button>
-    </nav>
-    <div class="d-flex flex-wrap gap-2">
-      <button class="btn btn-success btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalForm">Tambah Murid</button>
-      <button class="btn btn-success" onclick="window.location.href='mapel.html'">📚 Mapel</button>
-      <button class="btn btn-primary btn-sm flex-fill">Cetak Semua</button>
+  <div class="sticky-top bg-white border-bottom mb-3">
+  <div class="d-flex justify-content-between align-items-center py-2">
+    <h4 class="mb-0">📋 Data Santri Mafatihul Huda</h4>
+
+    <div class="d-flex align-items-center gap-2">
+      <span id="userInfo" class="fw-semibold text-primary"></span>
+      <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
+        Logout
+      </button>
     </div>
   </div>
 
-  <!-- Filter -->
-  <form id="filterForm" class="row g-2 mb-3">
-    <div class="col-md-4">
-      <input type="text" id="searchInput" class="form-control" placeholder="Cari nama...">
-    </div>
-    <div class="col-md-3">
-      <select id="kelasFilter" class="form-select">
-        <option value="">Filter Kelas</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select id="jilidFilter" class="form-select">
-        <option value="">Filter Jilid</option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      <button type="submit" class="btn btn-primary w-100">Filter</button>
-    </div>
-  </form>
-
-  <!-- Tabel Data -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped align-middle" id="muridTable">
-      <thead class="table-dark text-center">
-        <tr>
-          <th>ID</th>
-          <th>Nama</th>
-          <th>Jilid</th>
-          <th>Kelas</th>
-          <th>Alamat</th>
-          <th>Wali Murid</th>
-          <th>Wali Kelas</th>
-          <th>Status Nilai</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div class="d-flex flex-wrap gap-2 pb-2">
+    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalForm">
+      ➕ Tambah Murid
+    </button>
+    <button class="btn btn-secondary btn-sm" onclick="window.location.href='mapel.html'">
+      📚 Mapel
+    </button>
+    <button class="btn btn-primary btn-sm">
+      🖨 Cetak
+    </button>
+    <button class="btn btn-warning btn-sm" id="exportExcelBtn">
+      📤 Export Excel
+    </button>
   </div>
 </div>
+
+  <!-- Filter -->
+  <div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <form id="filterForm" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Cari Nama</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Cari nama...">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Kelas</label>
+        <select id="kelasFilter" class="form-select">
+          <option value="">Semua Kelas</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Jilid</label>
+        <select id="jilidFilter" class="form-select">
+          <option value="">Semua Jilid</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+          🔍 Filter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Tabel Data -->
+  <div class="table-responsive" style="max-height: 70vh;">
+  <table class="table table-bordered table-striped align-middle" id="muridTable">
+    <thead class="table-dark text-center sticky-top">
+      <tr>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Jilid</th>
+        <th>Kelas</th>
+        <th>Alamat</th>
+        <th>Wali Murid</th>
+        <th>Wali Kelas</th>
+        <th>Status Nilai</th>
+        <th style="width:120px">Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
 
 <!-- Modal Form -->
 <div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="modalFormLabel" aria-hidden="true">
@@ -240,6 +267,10 @@
     </div>
   </div>
 </div>
+
+<!-- Export Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -285,5 +316,8 @@
   });
 </script>
 
+
+
+</div>
 </body>
 </html>
